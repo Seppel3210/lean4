@@ -11,7 +11,7 @@ public import Init.Data.Range.Polymorphic.Instances
 public import Init.Data.SInt
 import all Init.Data.SInt.Basic
 
-import all Init.Data.Range.Polymorphic.Internal.SignedBitVec
+import Init.Data.Range.Polymorphic.Internal.SignedBitVec
 import Init.ByCases
 import Init.Data.Int.LemmasAux
 import Init.System.Platform
@@ -186,7 +186,7 @@ theorem toNat_toInt_add_one_sub_toInt {lo hi : BitVec n} (h : n > 0) :
   match n with
   | 0 => omega
   | n + 1 =>
-    simp only [toInt_eq_ofNat_toNat_rotate_sub h, rotate, BitVec.toNat_add, Int.natCast_emod,
+    simp only [toInt_eq_ofNat_toNat_rotate_sub h, rotate_eq_add, BitVec.toNat_add, Int.natCast_emod,
       show ∀ a b c d : Int, (a - b) + c - (d - b) = a + c - d by omega]
     omega
 
@@ -228,6 +228,16 @@ public instance : UpwardEnumerable Int8 where
     have := i.minValue_le_toInt
     if h : i.toInt + n ≤ maxValueSealed.toInt then some (.ofIntLE _ (by omega) (maxValueSealed_def ▸ h)) else none
 
+private theorem succ?_eq_minValueSealed {x : Int8} :
+    UpwardEnumerable.succ? x = if x + 1 = minValueSealed then none else some (x + 1) :=
+  (rfl)
+
+private theorem succMany?_eq_maxValueSealed {i : Int8} :
+    UpwardEnumerable.succMany? n i =
+      have := i.minValue_le_toInt
+      if h : i.toInt + n ≤ maxValueSealed.toInt then some (.ofIntLE _ (by omega) (maxValueSealed_def ▸ h)) else none :=
+  (rfl)
+
 instance : Least? Int8 where
   least? := some Int8.minValue
 
@@ -246,8 +256,8 @@ instance : HasModel Int8 (BitVec 8) where
   decode x := .ofBitVec x
   encode_decode := by simp
   decode_encode := by simp
-  le_iff_encode_le := by simp +instances [Int8.le_iff_toBitVec_sle, BitVec.Signed.instLE]
-  lt_iff_encode_lt := by simp +instances [Int8.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  le_iff_encode_le := by simp only [Int8.le_iff_toBitVec_sle]; simp [LE.le]
+  lt_iff_encode_lt := by simp [Int8.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -256,15 +266,15 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int8.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp +instances [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp [HasModel.succMany?_eq, succMany?_eq_maxValueSealed, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int8 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 instance : LawfulUpwardEnumerableLE Int8 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 public instance instRxcHasSize : Rxc.HasSize Int8 where
@@ -276,7 +286,7 @@ theorem instRxcHasSize_eq :
     ← toInt_toBitVec, HasModel.toNat_toInt_add_one_sub_toInt (Nat.zero_lt_succ _)]
 
 public instance instRxcLawfulHasSize : Rxc.LawfulHasSize Int8 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxcHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxcHasSize_eq]
   infer_instance
 public instance : Rxc.IsAlwaysFinite Int8 := by exact inferInstance
 
@@ -293,7 +303,7 @@ theorem instRxiHasSize_eq :
     HasModel.encode, HasModel.toNat_two_pow_sub_one_sub_toInt (show 8 > 0 by omega)]
 
 public instance instRxiLawfulHasSize : Rxi.LawfulHasSize Int8 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxiHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxiHasSize_eq]
   infer_instance
 public instance instRxiIsAlwaysFinite : Rxi.IsAlwaysFinite Int8 := by exact inferInstance
 
