@@ -350,8 +350,8 @@ instance : HasModel Int16 (BitVec 16) where
   decode x := .ofBitVec x
   encode_decode := by simp
   decode_encode := by simp
-  le_iff_encode_le := by simp +instances [Int16.le_iff_toBitVec_sle, BitVec.Signed.instLE]
-  lt_iff_encode_lt := by simp +instances [Int16.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  le_iff_encode_le := by simp only [Int16.le_iff_toBitVec_sle]; simp [LE.le]
+  lt_iff_encode_lt := by simp [Int16.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -360,15 +360,15 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int16.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp +instances [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int16 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 instance : LawfulUpwardEnumerableLE Int16 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 public instance instRxcHasSize : Rxc.HasSize Int16 where
@@ -380,7 +380,7 @@ theorem instRxcHasSize_eq :
     ← toInt_toBitVec, HasModel.toNat_toInt_add_one_sub_toInt (Nat.zero_lt_succ _)]
 
 public instance instRxcLawfulHasSize : Rxc.LawfulHasSize Int16 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxcHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxcHasSize_eq]
   infer_instance
 public instance : Rxc.IsAlwaysFinite Int16 := by exact inferInstance
 
@@ -397,7 +397,7 @@ theorem instRxiHasSize_eq :
     HasModel.encode, HasModel.toNat_two_pow_sub_one_sub_toInt (show 16 > 0 by omega)]
 
 public instance instRxiLawfulHasSize : Rxi.LawfulHasSize Int16 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxiHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxiHasSize_eq]
   infer_instance
 public instance instRxiIsAlwaysFinite : Rxi.IsAlwaysFinite Int16 := by exact inferInstance
 
@@ -444,8 +444,8 @@ instance : HasModel Int32 (BitVec 32) where
   decode x := .ofBitVec x
   encode_decode := by simp
   decode_encode := by simp
-  le_iff_encode_le := by simp +instances [Int32.le_iff_toBitVec_sle, BitVec.Signed.instLE]
-  lt_iff_encode_lt := by simp +instances [Int32.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  le_iff_encode_le := by simp only [Int32.le_iff_toBitVec_sle]; simp [LE.le]
+  lt_iff_encode_lt := by simp [Int32.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -454,15 +454,15 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int32.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp +instances [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int32 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 instance : LawfulUpwardEnumerableLE Int32 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 public instance instRxcHasSize : Rxc.HasSize Int32 where
@@ -474,7 +474,7 @@ theorem instRxcHasSize_eq :
     ← toInt_toBitVec, HasModel.toNat_toInt_add_one_sub_toInt (Nat.zero_lt_succ _)]
 
 public instance instRxcLawfulHasSize : Rxc.LawfulHasSize Int32 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxcHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxcHasSize_eq]
   infer_instance
 public instance : Rxc.IsAlwaysFinite Int32 := by exact inferInstance
 
@@ -491,7 +491,7 @@ theorem instRxiHasSize_eq :
     HasModel.encode, HasModel.toNat_two_pow_sub_one_sub_toInt (show 32 > 0 by omega)]
 
 public instance instRxiLawfulHasSize : Rxi.LawfulHasSize Int32 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxiHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxiHasSize_eq]
   infer_instance
 public instance instRxiIsAlwaysFinite : Rxi.IsAlwaysFinite Int32 := by exact inferInstance
 
@@ -538,8 +538,8 @@ instance : HasModel Int64 (BitVec 64) where
   decode x := .ofBitVec x
   encode_decode := by simp
   decode_encode := by simp
-  le_iff_encode_le := by simp +instances [Int64.le_iff_toBitVec_sle, BitVec.Signed.instLE]
-  lt_iff_encode_lt := by simp +instances [Int64.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  le_iff_encode_le := by simp only [Int64.le_iff_toBitVec_sle]; simp [LE.le]
+  lt_iff_encode_lt := by simp [Int64.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -548,15 +548,15 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int64.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp +instances [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int64 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 instance : LawfulUpwardEnumerableLE Int64 := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 public instance instRxcHasSize : Rxc.HasSize Int64 where
@@ -568,7 +568,7 @@ theorem instRxcHasSize_eq :
     ← toInt_toBitVec, HasModel.toNat_toInt_add_one_sub_toInt (Nat.zero_lt_succ _)]
 
 public instance instRxcLawfulHasSize : Rxc.LawfulHasSize Int64 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxcHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxcHasSize_eq]
   infer_instance
 public instance : Rxc.IsAlwaysFinite Int64 := by exact inferInstance
 
@@ -585,7 +585,7 @@ theorem instRxiHasSize_eq :
     HasModel.encode, HasModel.toNat_two_pow_sub_one_sub_toInt (show 64 > 0 by omega)]
 
 public instance instRxiLawfulHasSize : Rxi.LawfulHasSize Int64 := by
-  simp +instances only [instUpwardEnumerable_eq, instRxiHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxiHasSize_eq]
   infer_instance
 public instance instRxiIsAlwaysFinite : Rxi.IsAlwaysFinite Int64 := by exact inferInstance
 
@@ -637,8 +637,8 @@ instance : HasModel ISize (BitVec System.Platform.numBits) where
   decode x := .ofBitVec x
   encode_decode := by simp
   decode_encode := by simp
-  le_iff_encode_le := by simp +instances [ISize.le_iff_toBitVec_sle, BitVec.Signed.instLE]
-  lt_iff_encode_lt := by simp +instances [ISize.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  le_iff_encode_le := by simp only [ISize.le_iff_toBitVec_sle]; simp [LE.le]
+  lt_iff_encode_lt := by simp [ISize.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -647,15 +647,15 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← ISize.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp +instances [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable ISize := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 instance : LawfulUpwardEnumerableLE ISize := by
-  simp +instances only [instUpwardEnumerable_eq]
+  rw [instUpwardEnumerable_eq]
   infer_instance
 
 public instance instRxcHasSize : Rxc.HasSize ISize where
@@ -667,7 +667,7 @@ theorem instRxcHasSize_eq :
     ← toInt_toBitVec, HasModel.toNat_toInt_add_one_sub_toInt System.Platform.numBits_pos]
 
 public instance instRxcLawfulHasSize : Rxc.LawfulHasSize ISize := by
-  simp +instances only [instUpwardEnumerable_eq, instRxcHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxcHasSize_eq]
   infer_instance
 public instance : Rxc.IsAlwaysFinite ISize := by exact inferInstance
 
@@ -684,7 +684,7 @@ theorem instRxiHasSize_eq :
     HasModel.encode, HasModel.toNat_two_pow_sub_one_sub_toInt System.Platform.numBits_pos]
 
 public instance instRxiLawfulHasSize : Rxi.LawfulHasSize ISize := by
-  simp +instances only [instUpwardEnumerable_eq, instRxiHasSize_eq]
+  rw [instUpwardEnumerable_eq, instRxiHasSize_eq]
   infer_instance
 public instance instRxiIsAlwaysFinite : Rxi.IsAlwaysFinite ISize := by exact inferInstance
 
