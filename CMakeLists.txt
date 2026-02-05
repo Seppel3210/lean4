@@ -162,6 +162,9 @@ add_custom_target(update-stage0 COMMAND $(MAKE) -C stage1 update-stage0 DEPENDS 
 add_custom_target(update-stage0-commit COMMAND $(MAKE) -C stage1 update-stage0-commit DEPENDS stage1)
 
 add_custom_target(test COMMAND $(MAKE) -C stage1 test DEPENDS stage1)
+add_custom_target(bench COMMAND $(MAKE) -C stage1 bench DEPENDS stage1)
+add_custom_target(bench-part1 COMMAND $(MAKE) -C stage1 bench-part1 DEPENDS stage1)
+add_custom_target(bench-part2 COMMAND $(MAKE) -C stage1 bench-part2 DEPENDS stage1)
 
 add_custom_target(clean-stdlib COMMAND $(MAKE) -C stage1 clean-stdlib DEPENDS stage1)
 
