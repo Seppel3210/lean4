@@ -1,0 +1,10 @@
+ofNatNormNum.lean:29:20-29:27: warning: This simp argument is unused:
+  S.ofNat
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵S̵.̵o̵f̵N̵a̵t̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+theorem ex2.{u_1} : ∀ {α : Type u_1} [inst : S α],
+  100000000000000000 * 20000000000000000 = 2000000000000000000000000000000000 :=
+fun {α} [S α] => S.ofNat_mul 100000000000000000 20000000000000000

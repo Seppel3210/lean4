@@ -1,0 +1,17 @@
+[Compiler.result] size: 8
+    def List.mapTR.loop._at_.notList.spec_0 x.1 x.2 : tobj :=
+      cases x.1 : tobj
+      | List.nil =>
+        let _x.3 := List.reverse._redArg x.2;
+        return _x.3
+      | List.cons =>
+        let tail.4 := proj[1] x.1;
+        let _x.5 := reset[2] x.1;
+        let _x.6 := reuse _x.5 in ctor_1[List.cons] ◾ x.2;
+        let _x.7 := List.mapTR.loop._at_.notList.spec_0 tail.4 _x.6;
+        return _x.7
+[Compiler.result] size: 2
+    def notList l : tobj :=
+      let _x.1 := ctor_0[List.nil] ;
+      let _x.2 := List.mapTR.loop._at_.notList.spec_0 l _x.1;
+      return _x.2

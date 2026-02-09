@@ -1,0 +1,46 @@
+[Compiler.IR] [rc]
+    def f (x_1 : tobj) (x_2 : tobj) : u8 :=
+      block_3 (x_4 : tobj) :=
+        let x_5 : u8 := p x_4;
+        case x_5 : u8 of
+        Bool.false →
+          let x_6 : tagged := 1;
+          let x_7 : tobj := Nat.add x_4 x_6;
+          dec x_4;
+          let x_8 : u8 := p x_7;
+          dec x_7;
+          ret x_8
+        Bool.true →
+          dec x_4;
+          ret x_5;
+      let x_9 : tagged := 0;
+      let x_10 : u8 := Nat.decEq x_1 x_9;
+      case x_10 : u8 of
+      Bool.false →
+        dec x_2;
+        let x_11 : obj := g x_1;
+        let x_12 : tobj := proj[0] x_11;
+        inc x_12;
+        dec x_11;
+        jmp block_3 x_12
+      Bool.true →
+        dec x_1;
+        let x_13 : obj := g x_2;
+        let x_14 : tobj := proj[0] x_13;
+        inc x_14;
+        dec x_13;
+        jmp block_3 x_14
+    def f._boxed (x_1 : tobj) (x_2 : tobj) : tagged :=
+      let x_3 : u8 := f x_1 x_2;
+      let x_4 : tagged := box x_3;
+      ret x_4
+[Compiler.IR] [rc]
+    def h (x_1 : @& tobj) : u8 :=
+      let x_2 : tagged := 5;
+      let x_3 : u8 := Nat.decLt x_2 x_1;
+      ret x_3
+    def h._boxed (x_1 : tobj) : tagged :=
+      let x_2 : u8 := h x_1;
+      dec x_1;
+      let x_3 : tagged := box x_2;
+      ret x_3

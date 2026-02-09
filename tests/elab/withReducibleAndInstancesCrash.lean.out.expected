@@ -1,0 +1,4 @@
+[Meta.debug] b: ((((((x.add 1).add 1).add 1).add (((x.add 1).add 1).add 1)).mul
+              ((((y.add 1).add 1).add 1).add (((y.add 1).add 1).add 1))).mul
+          ((((y.add 1).add 1).add 1).add (((y.add 1).add 1).add 1))).add
+      1

@@ -1,0 +1,16 @@
+Bar.check.eq_1 {f : Box} (f_1 : Box) (f_2 : Bar f_1) : f_2.bar₁.check = f_2.check
+Bar.check.eq_2 {f : Box} (f_1 : Box) (f_2 : Bar f_1) : f_2.bar₂.check = f_2.check
+Bar.check.match_1.eq_1.{u_1} {f : Box} (motive : Bar f → Sort u_1) (f✝ : Box) (f✝¹ : Bar f✝)
+  (h_1 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₁) (h_2 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₂) :
+  (match f✝¹.bar₁ with
+    | f_1.bar₁ => h_1 f f_1
+    | f_1.bar₂ => h_2 f f_1) =
+    h_1 f✝ f✝¹
+Bar.check.match_1.eq_2.{u_1} {f : Box} (motive : Bar f → Sort u_1) (f✝ : Box) (f✝¹ : Bar f✝)
+  (h_1 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₁) (h_2 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₂) :
+  (match f✝¹.bar₂ with
+    | f_1.bar₁ => h_1 f f_1
+    | f_1.bar₂ => h_2 f f_1) =
+    h_2 f✝ f✝¹
+Bar.check.match_1.splitter.{u_1} {f : Box} (motive : Bar f → Sort u_1) (x✝ : Bar f)
+  (h_1 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₁) (h_2 : (f : Box) → (f_1 : Bar f) → motive f_1.bar₂) : motive x✝
