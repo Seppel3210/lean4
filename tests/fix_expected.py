@@ -10,24 +10,59 @@ os.chdir(Path(__file__).parent.parent)
 
 
 parser = argparse.ArgumentParser(
-    description="Interactively fix *.expected files "
-    "based on their corresponding *.produced files."
+    description="Interactively create, fix, and remove *.out.expected files "
+    "based on their corresponding *.out.produced files."
 )
 args = parser.parse_args()
 
 
-def compare_and_fix(expected_file: Path, produced_file: Path) -> None:
-    if not produced_file.exists():
-        print(f"{expected_file}: No corresponding {produced_file}")
-        return
+def prompt(message: str, options: str = "Yn") -> str:
+    default: str | None = None
+    for c in options:
+        if c.isupper():
+            default = c.lower()
+            break
 
-    expected = expected_file.read_bytes()
+    options = options.lower()
+    options_display = "/".join(c.upper() if c == default else c for c in options)
+
+    while True:
+        response = input(f"{message} [{options_display}]: ").strip().lower()
+        if not response and default:
+            return default
+        elif response in options.lower():
+            return response
+        else:
+            print(f"Please enter {options_display}.")
+
+
+def remove_expected_and_ignored(
+    produced_file: Path,
+    expected_file: Path,
+    ignored_file: Path,
+) -> None:
+    if expected_file.exists():
+        print(f"{produced_file} is empty but {expected_file} exists.")
+        if prompt(f"Remove {expected_file}?") == "y":
+            expected_file.unlink()
+
+    if ignored_file.exists():
+        print(f"{produced_file} is empty but {ignored_file} exists.")
+        if prompt(f"Remove {ignored_file}?") == "y":
+            ignored_file.unlink()
+
+
+def compare_and_merge(
+    produced_file: Path,
+    expected_file: Path,
+) -> None:
     produced = produced_file.read_bytes()
+    expected = expected_file.read_bytes()
 
-    if expected == produced:
+    if produced == expected:
         return
 
-    print(f"{expected_file}: Differs from {produced_file}")
+    print(f"{produced_file} differs from {expected_file}")
 
     # This is the opposite direction of the tests' diff output, but meld puts
     # the cursor into the right file by default, and only saves the file with
@@ -36,16 +71,29 @@ def compare_and_fix(expected_file: Path, produced_file: Path) -> None:
     subprocess.run(["meld", produced_file, expected_file])
 
 
-for expected_file in Path().rglob("*.expected"):
-    produced_file = expected_file.with_suffix(".produced")
-    compare_and_fix(expected_file, produced_file)
+def create_or_ignore(
+    produced_file: Path,
+    expected_file: Path,
+    ignored_file: Path,
+) -> None:
+    print(f"{produced_file} is not empty.")
+    answer = prompt("Create expected file, ignore, or do nothing?", "Ein")
+    if answer == "e":
+        produced_file.copy(expected_file)
+    elif answer == "i":
+        ignored_file.touch()
 
-# Old file naming scheme
 
-for expected_file in Path().rglob("*.expected.out"):
-    produced_file = expected_file.with_suffix("").with_suffix(".produced.out")
-    compare_and_fix(expected_file, produced_file)
+for produced_file in sorted(Path().rglob("*.out.produced")):
+    expected_file = produced_file.with_suffix(".expected")
+    ignored_file = produced_file.with_suffix(".ignored")
 
-for expected_file in Path().rglob("*.expected.ret"):
-    produced_file = expected_file.with_suffix("").with_suffix(".produced.ret")
-    compare_and_fix(expected_file, produced_file)
+    produced = produced_file.read_bytes()
+    if not produced:
+        remove_expected_and_ignored(produced_file, expected_file, ignored_file)
+    elif ignored_file.exists():
+        pass
+    elif expected_file.exists():
+        compare_and_merge(produced_file, expected_file)
+    else:
+        create_or_ignore(produced_file, expected_file, ignored_file)
