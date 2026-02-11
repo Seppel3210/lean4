@@ -257,7 +257,7 @@ instance : HasModel Int8 (BitVec 8) where
   encode_decode := by simp
   decode_encode := by simp
   le_iff_encode_le := by simp only [Int8.le_iff_toBitVec_sle]; simp [LE.le]
-  lt_iff_encode_lt := by simp [Int8.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  lt_iff_encode_lt := by simp only [Int8.lt_iff_toBitVec_slt]; simp [LT.lt]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -351,7 +351,7 @@ instance : HasModel Int16 (BitVec 16) where
   encode_decode := by simp
   decode_encode := by simp
   le_iff_encode_le := by simp only [Int16.le_iff_toBitVec_sle]; simp [LE.le]
-  lt_iff_encode_lt := by simp [Int16.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  lt_iff_encode_lt := by simp only [Int16.lt_iff_toBitVec_slt]; simp [LT.lt]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -360,7 +360,8 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int16.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp only [HasModel.succMany?_eq]
+    simp [UpwardEnumerable.succMany?, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int16 := by
@@ -445,7 +446,7 @@ instance : HasModel Int32 (BitVec 32) where
   encode_decode := by simp
   decode_encode := by simp
   le_iff_encode_le := by simp only [Int32.le_iff_toBitVec_sle]; simp [LE.le]
-  lt_iff_encode_lt := by simp [Int32.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  lt_iff_encode_lt := by simp only [Int32.lt_iff_toBitVec_slt]; simp [LT.lt]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -454,7 +455,8 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int32.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp only [HasModel.succMany?_eq]
+    simp [UpwardEnumerable.succMany?, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int32 := by
@@ -539,7 +541,7 @@ instance : HasModel Int64 (BitVec 64) where
   encode_decode := by simp
   decode_encode := by simp
   le_iff_encode_le := by simp only [Int64.le_iff_toBitVec_sle]; simp [LE.le]
-  lt_iff_encode_lt := by simp [Int64.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  lt_iff_encode_lt := by simp only [Int64.lt_iff_toBitVec_slt]; simp [LT.lt]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -548,7 +550,8 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← Int64.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp only [HasModel.succMany?_eq]
+    simp [UpwardEnumerable.succMany?, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable Int64 := by
@@ -638,7 +641,7 @@ instance : HasModel ISize (BitVec System.Platform.numBits) where
   encode_decode := by simp
   decode_encode := by simp
   le_iff_encode_le := by simp only [ISize.le_iff_toBitVec_sle]; simp [LE.le]
-  lt_iff_encode_lt := by simp [ISize.lt_iff_toBitVec_slt, BitVec.Signed.instLT]
+  lt_iff_encode_lt := by simp only [ISize.lt_iff_toBitVec_slt]; simp[LT.lt]
 
 theorem instUpwardEnumerable_eq :
     instUpwardEnumerable = HasModel.instUpwardEnumerable := by
@@ -647,7 +650,8 @@ theorem instUpwardEnumerable_eq :
     apply HasModel.succ?_eq_of_technicalCondition
     simp [HasModel.encode, succ?, ← ISize.toBitVec_inj, toBitVec_minValueSealed_eq_intMinSealed]
   · ext
-    simp [HasModel.succMany?_eq, instUpwardEnumerable, HasModel.encode, HasModel.decode,
+    simp only [HasModel.succMany?_eq]
+    simp [UpwardEnumerable.succMany?, HasModel.encode, HasModel.decode,
       ← toInt_toBitVec, toBitVec_maxValueSealed_eq_intMaxSealed, ofIntLE_eq_ofInt]
 
 instance : LawfulUpwardEnumerable ISize := by
