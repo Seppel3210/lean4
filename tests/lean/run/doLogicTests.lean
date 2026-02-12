@@ -201,6 +201,7 @@ theorem returning_loop_spec :
   case post =>
     split
     · mspec
+      mspec
       intro _ h
       simp at h
       grind
@@ -233,6 +234,7 @@ theorem fib_triple : ⦃⌜True⌝⦄ fib_impl n ⦃⇓ r => ⌜r = fib_spec n�
   mintro _
   if h : n = 0 then simp [h] else
   simp only [h, reduceIte]
+  mspec -- Spec.pure
   mspec Spec.forIn_range (⇓ ⟨xs, a, b⟩ => ⌜a = fib_spec xs.pos ∧ b = fib_spec (xs.pos + 1)⌝) ?step
   case step => intros; mintro _; simp_all
   simp_all [Nat.sub_one_add_one]
@@ -243,14 +245,15 @@ theorem fib_triple_cases : ⦃⌜True⌝⦄ fib_impl n ⦃⇓ r => ⌜r = fib_sp
   intro h
   mintro -
   simp only [fib_impl, h, reduceIte]
+  mspec
   mspec Spec.forIn_range (⇓ ⟨xs, a, b⟩ => ⌜a = fib_spec xs.pos ∧ b = fib_spec (xs.pos + 1)⌝) ?step
-  case step => intros; mintro _; mspec; simp_all
+  case step => intros; mintro _; mspec; mspec; simp_all
   simp_all [Nat.sub_one_add_one]
 
 theorem fib_impl_vcs
     (Q : Nat → PostCond Nat PostShape.pure)
     (I : (n : Nat) → (_ : ¬n = 0) →
-      Invariant [1:n].toList (Prod Nat Nat) PostShape.pure)
+      Invariant [1:n].toList (MProd Nat Nat) PostShape.pure)
     (ret : ⊢ₛ (Q 0).1 0)
     (loop_pre : ∀ n (hn : ¬n = 0), ⊢ₛ (I n hn).1 ⟨⟨[], [1:n].toList, rfl⟩, 0, 1⟩)
     (loop_post : ∀ n (hn : ¬n = 0) r, (I n hn).1 ⟨⟨[1:n].toList, [], by simp⟩, r⟩ ⊢ₛ (Q n).1 r.2)
@@ -263,11 +266,13 @@ theorem fib_impl_vcs
   simp only [fib_impl, hn, ↓reduceIte]
   mstart
   mspec
+  mspec
   case pre => exact loop_pre n hn
   case post.success => mspec; mpure_intro; apply_rules [loop_post]
   case step =>
     intro _ _ _ _ h;
     mintro _;
+    mspec
     mspec
     mpure_intro
     apply_rules [loop_step]
@@ -383,7 +388,7 @@ theorem fib_triple_erase : ⦃⌜True⌝⦄ fib_impl n ⦃⇓ r => ⌜r = fib_sp
 theorem fib_impl_vcs
     (Q : Nat → PostCond Nat PostShape.pure)
     (I : (n : Nat) → (_ : ¬n = 0) →
-      Invariant [1:n].toList (Prod Nat Nat) PostShape.pure)
+      Invariant [1:n].toList (MProd Nat Nat) PostShape.pure)
     (ret : ⊢ₛ (Q 0).1 0)
     (loop_pre : ∀ n (hn : ¬n = 0), ⊢ₛ (I n hn).1 ⟨⟨[], [1:n].toList, rfl⟩, 0, 1⟩)
     (loop_post : ∀ n (hn : ¬n = 0) r, (I n hn).1 ⟨⟨[1:n].toList, [], by simp⟩, r⟩ ⊢ₛ (Q n).1 r.2)
@@ -521,7 +526,7 @@ example (p : Nat → Prop) [DecidablePred p] (n : Nat) :
   apply Id.of_wp_run_eq h
   mvcgen
   case inv1 =>
-    exact Invariant.withEarlyReturnProd
+    exact Invariant.withEarlyReturn
       (onReturn := fun ret _ => ⌜ret = false ∧ ¬ ∀ i < n, p i⌝)
       (onContinue := fun xs _ => ⌜∀ i, i ∈ xs.prefix → p i⌝)
   all_goals simp_all [-Classical.not_forall]; try grind
@@ -675,14 +680,15 @@ theorem max_and_sum_spec (xs : Array Nat) :
     ⦃⌜∀ i, (h : i < xs.size) → xs[i] ≥ 0⌝⦄ max_and_sum xs ⦃⇓ (m, s) => ⌜s ≤ m * xs.size⌝⦄ := by
   mvcgen [max_and_sum]
   case inv1 => exact (⇓ ⟨xs, m, s⟩ => ⌜s ≤ m * xs.pos⌝)
-  all_goals simp_all +zetaDelta
+  all_goals simp_all
   · rw [Nat.left_distrib]
-    simp only [Nat.mul_one, Nat.add_le_add_iff_right]
+    simp +zetaDelta only [Nat.mul_one, Nat.add_le_add_iff_right]
     rename_i h
     apply Nat.le_trans h
     apply Nat.mul_le_mul_right
     grind
-  · grind
+  · rw [Nat.left_distrib]
+    grind
 
 end MaxAndSum
 
@@ -843,28 +849,28 @@ theorem fast_expo_correct (x n : Nat) : fast_expo x n = x^n := by
   apply Id.of_wp_run_eq h
   mvcgen
   case inv1 => exact ⇓⟨xs, e, x', y⟩ => ⌜x' ^ e * y = x ^ n ∧ e ≤ n - xs.pos⌝
-  all_goals simp_all +zetaDelta
-  case vc1 b _ _ _ _ ih =>
-    obtain ⟨x', y, e⟩ := b
+  all_goals simp_all
+  case vc1 b _ _ _ _ _ _ ih =>
+    obtain ⟨e, y, x'⟩ := b
     subst_vars
     grind
-  case vc2 b _ _ _ _ _ ih _ =>
-    obtain ⟨x', y, e⟩ := b
+  case vc2 b _ _ _ _ _ _ ih _ =>
+    obtain ⟨e, y, x'⟩ := b
     simp at *
     constructor
     · rw [← Nat.mul_assoc, ← Nat.pow_add_one, ← ih.1]
       have : e - 1 + 1 = e := by grind
       rw [this]
     · grind
-  case vc3 b _ _ _ _ _ ih _ =>
-    obtain ⟨x', y, e⟩ := b
+  case vc3 b _ _ _ _ _ _ ih _ =>
+    obtain ⟨e, y, x'⟩ := b
     simp at *
     constructor
     · rw [← Nat.pow_two, ← Nat.pow_mul]
       grind
     · grind
   case vc5 b ih =>
-    obtain ⟨x', y, e⟩ := b
+    obtain ⟨e, y, x'⟩ := b
     simp at *
     rw [← ih.1, ih.2, Nat.pow_zero, Nat.one_mul]
 
