@@ -87,6 +87,7 @@ def create_or_ignore(
 for produced_file in sorted(Path().rglob("*.out.produced")):
     expected_file = produced_file.with_suffix(".expected")
     ignored_file = produced_file.with_suffix(".ignored")
+    # TODO .no_test
 
     produced = produced_file.read_bytes()
     if not produced:
