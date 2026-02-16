@@ -1,0 +1,6 @@
+source ../../env_bench.sh
+source "$TEST_DIR/util.sh"
+
+make -C "$BUILD_DIR" install DESTDIR="$NAME.install"
+python measure_sizes.py "$SRC_DIR" "$BUILD_DIR" "$NAME.install" "$OUT"
+rm -rf "$NAME.install"
